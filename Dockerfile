@@ -1,4 +1,4 @@
-FROM node:14-alpine as builder
+FROM node:14-alpine as node_static
 
 WORKDIR /usr/src/app
 
@@ -14,17 +14,11 @@ RUN npm run build-prod
 
 FROM nginx:alpine
 
-#!/bin/sh
-
 COPY nginx.conf /etc/nginx/
 
 RUN rm -rf /usr/share/nginx/html/*
 
-# Copy from the stahg 1
-COPY --from=builder /usr/src/app/dist/ /usr/share/nginx/html
+COPY --from=node_static /usr/src/app/dist/ /usr/share/nginx/html
 
-#theirs
 ENTRYPOINT ["nginx", "-g", "daemon off;"]
-
-#mine
 #ENTRYPOINT ["nginx", "-c", "/etc/nginx/nginx.conf"]
